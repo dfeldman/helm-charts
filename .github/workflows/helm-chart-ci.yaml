@@ -87,9 +87,11 @@ jobs:
       - id: set-matrix
         name: Collect all tests
         run: |
-          tests="$(echo -e "default\n$(find .github/tests -maxdepth 1 -type d | grep -Ev 'tests$' | xargs -I % basename % | sort | uniq)")"
+          charts="$(find . -maxdepth 1 -type d | grep -Ev '\.$' | xargs -I % basename %)"
+          tests="$(echo -e "default\n$(find . -maxdepth 2 -type d | grep -Ev "(${charts//$'\n'/|}|\.)\$" | cut -d '/' -f2- | sort | uniq)")"
           tests_json="$(echo "$tests" | jq -c --slurp --raw-input 'split("\n") | map(select(. != ""))')"
           echo "tests=$tests_json" >> $GITHUB_OUTPUT
+        working-directory: .github/tests
 
     outputs:
       tests: ${{ steps.set-matrix.outputs.tests }}
@@ -116,8 +118,7 @@ jobs:
           - v1.24.7
           - v1.23.13
           - v1.22.15
-        values:
-          - ${{ fromJson(needs.build-matrix.outputs.tests) }}
+        chart-scenario: ${{ fromJson(needs.build-matrix.outputs.tests) }}
 
     steps:
       - name: Checkout
@@ -175,4 +176,4 @@ jobs:
               ${{ (matrix.values != 'default' && '--helm-extra-set-args "--values=${TEST_DIR}/values.yaml ${EXTRA_HELM_ARGS}"') || '' }}
           fi
         env:
-          TEST_DIR: .github/tests/${{ matrix.values }}
+          TEST_DIR: .github/tests/${{ matrix.chart-scenario }}
