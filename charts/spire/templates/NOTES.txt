@@ -1,1 +1,8 @@
 Installed {{ .Chart.Name }}…
+
+For testing workflow, the commit for this change has to be removed prior to merge.
+
+```shell
+git reset HEAD^ --hard
+git push --force-with-lease
+```
