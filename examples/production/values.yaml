@@ -3,22 +3,6 @@ global:
     prometheus:
       enabled: true
 
-spiffe-oidc-discovery-provider:
-  enabled: true
-  insecureScheme:
-    enabled: true
-  podSecurityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
-  securityContext:
-    allowPrivilegeEscalation: false
-    runAsNonRoot: true
-    readOnlyRootFilesystem: true
-    capabilities:
-      drop: [ALL]
-    seccompProfile:
-      type: RuntimeDefault
-
 spire-server:
   nodeAttestor:
     k8sPsat:
@@ -37,7 +21,43 @@ spire-server:
       drop: [ALL]
     seccompProfile:
       type: RuntimeDefault
+
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: server
+          app.kubernetes.io/instance: spire
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  dataStorage:
+    enabled: true
+    size: 10Gi
+    accessMode: ReadWriteOnce
+    storageClass: gp3-encrypted
+
+  jwtIssuer: &jwtIssuer oidc-spire.eu-west-1-marco-test.my-domain.com
+  ca_subject:
+    country: "NL"
+    organization: "Marco Home Office"
+    common_name: spire.eu-west-1-marco-test.my-domain.com
+
+  logLevel: info
+  clusterName: &clusterName my-test-cluster
+  trustDomain: &trustDomain eu-west-1-marco-test.my-domain.com
+
   controllerManager:
+    enabled: true
+
     securityContext:
       allowPrivilegeEscalation: false
       runAsNonRoot: true
@@ -47,10 +67,39 @@ spire-server:
       seccompProfile:
         type: RuntimeDefault
 
+    resources:
+      requests:
+        cpu: 100m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+    ignoreNamespaces:
+      - kube-system
+      - kube-public
+      - local-path-storage
+
 spiffe-csi-driver:
   enabled: true
   namespaceOverride: spire-system
-  priorityClassName: system-node-critical
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+  nodeDriverRegistrar:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 32Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
 
 spire-agent:
   enabled: true
@@ -60,3 +109,69 @@ spire-agent:
   server:
     namespaceOverride: spire-server
   priorityClassName: system-node-critical
+
+  logLevel: info
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  clusterName: *clusterName
+  trustDomain: *trustDomain
+
+  waitForIt:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        cpu: 50m
+        memory: 32Mi
+
+
+spiffe-oidc-discovery-provider:
+  enabled: true
+  insecureScheme:
+    enabled: true
+    nginx:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: [ALL]
+    seccompProfile:
+      type: RuntimeDefault
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  config:
+    domains:
+      - *jwtIssuer
+
+    acme:
+      tosAccepted: true
+      cacheDir: "/run/spire"
+      emailAddress: marco.franssen@gmail.com
+
+  trustDomain: *trustDomain
