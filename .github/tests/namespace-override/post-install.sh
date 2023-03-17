@@ -13,9 +13,9 @@ cat <<EOF >>"$GITHUB_STEP_SUMMARY"
 | workload | Status |
 | -------- | ------ |
 | spire-server | $("${k_rollout_status[@]}" spire-server statefulset spire-server) |
+| spire-spiffe-oidc-discovery-provider | $("${k_wait[@]}" spire-server deployments.apps spire-spiffe-oidc-discovery-provider) |
 | spire-spiffe-csi-driver | $("${k_rollout_status[@]}" spire-system daemonset spire-spiffe-csi-driver) |
 | spire-agent | $("${k_rollout_status[@]}" spire-system daemonset spire-agent) |
-| spire-spiffe-oidc-discovery-provider | $("${k_wait[@]}" spire-server deployments.apps spire-spiffe-oidc-discovery-provider) |
 EOF
 
 if [ $1 -ne 0 ]; then
