@@ -34,7 +34,11 @@ spec:
       {{- if .Values.tests.tls.enabled }}
       image: {{ include "spiffe-oidc-discovery-provider.image" .Values.tests.tls }}
       command: ['curl']
+      {{- if .Values.tests.tls.customCA }}
       args: ['--cacert', '/ca/ca.crt', 'https://{{ index .Values.config.domains 0 }}/.well-known/openid-configuration']
+      {{- else }}
+      args: ['https://{{ index .Values.config.domains 0 }}/.well-known/openid-configuration']
+      {{- end }}
       {{- if .Values.tests.tls.customCA }}
       volumeMounts:
       - name: custom-ca
