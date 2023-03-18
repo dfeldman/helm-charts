@@ -68,6 +68,7 @@ A Helm chart to install the SPIFFE OIDC discovery provider.
 | telemetry.prometheus.nginxExporter.image.version | string | `"0.11.0"` |  |
 | telemetry.prometheus.nginxExporter.resources | object | `{}` |  |
 | telemetry.prometheus.port | int | `9988` |  |
+| tests.hostAliases | list | `[]` |  |
 | tolerations | list | `[]` |  |
 | trustDomain | string | `"example.org"` |  |
 

@@ -155,3 +155,6 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - oidc-discovery.example.org
+
+tests:
+  hostAliases: []
