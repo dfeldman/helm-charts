@@ -9,7 +9,7 @@ helm install cert-manager cert-manager --namespace cert-manager --create-namespa
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 kubectl apply -f $SCRIPT_DIR/testcert.yaml -n spire-server
 
-helm install ingress-nginx ingress-nginx --version 4.5.2 --repo https://kubernetes.github.io/ingress-nginx --create-namespace -n ingress-nginx --set controller.extraArgs.enable-ssl-passthrough=
+helm install ingress-nginx ingress-nginx --version 4.5.2 --repo https://kubernetes.github.io/ingress-nginx --create-namespace -n ingress-nginx --set controller.extraArgs.enable-ssl-passthrough= --wait
 
 helm upgrade --install --namespace spire-server spire charts/spire -f examples/production/values.yaml -f examples/production/values-export-ingress-nginx.yaml --wait
 
