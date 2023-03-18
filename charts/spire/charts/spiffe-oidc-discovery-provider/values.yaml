@@ -167,8 +167,9 @@ tests:
   tls:
     enabled: false
     customCA: ""
+    # -- Any image with a fully functional curl.
     image:
       registry: docker.io
       repository: library/rockylinux
       pullPolicy: Always
-      version: 9
+      version: "9"

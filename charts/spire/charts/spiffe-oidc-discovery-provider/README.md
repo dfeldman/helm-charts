@@ -75,10 +75,7 @@ A Helm chart to install the SPIFFE OIDC discovery provider.
 | tests.hostAliases | list | `[]` |  |
 | tests.tls.customCA | string | `""` |  |
 | tests.tls.enabled | bool | `false` |  |
-| tests.tls.image.pullPolicy | string | `"Always"` |  |
-| tests.tls.image.registry | string | `"docker.io"` |  |
-| tests.tls.image.repository | string | `"library/rockylinux"` |  |
-| tests.tls.image.version | int | `9` |  |
+| tests.tls.image | object | `{"pullPolicy":"Always","registry":"docker.io","repository":"library/rockylinux","version":"9"}` | Any image with a fully functional curl. |
 | tolerations | list | `[]` |  |
 | trustDomain | string | `"example.org"` |  |
 
