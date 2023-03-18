@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 kubectl create namespace spire-system
 kubectl label namespace spire-system pod-security.kubernetes.io/enforce=privileged
@@ -12,6 +12,7 @@ kubectl apply -f $SCRIPT_DIR/testcert.yaml -n spire-server
 helm install ingress-nginx ingress-nginx --version 4.5.2 --repo https://kubernetes.github.io/ingress-nginx --create-namespace -n ingress-nginx --set controller.extraArgs.enable-ssl-passthrough= --wait
 
 helm upgrade --install --namespace spire-server spire charts/spire -f examples/production/values.yaml -f examples/production/values-export-ingress-nginx.yaml --wait
+helm test --namespace spire-server spire
 
 ip=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o go-template='{{ .spec.clusterIP }}')
 echo $ip oidc-discovery.example.org
