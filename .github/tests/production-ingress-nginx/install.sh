@@ -14,6 +14,8 @@ helm install ingress-nginx ingress-nginx --version 4.5.2 --repo https://kubernet
     --set controller.ingressClassResource.default=true
 
 helm upgrade --install --namespace spire-server spire charts/spire -f examples/production/values.yaml -f examples/production/values-export-ingress-nginx.yaml --wait
+
+echo Testing...
 helm test --namespace spire-server spire
 
 ip=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o go-template='{{ .spec.clusterIP }}')

@@ -77,8 +77,8 @@ insecureScheme:
 config:
   logLevel: info
   domains:
-    - localhost
     - oidc-discovery.example.org
+    - localhost
 
   acme:
     tosAccepted: false
