@@ -158,3 +158,17 @@ ingress:
 
 tests:
   hostAliases: []
+  busybox:
+    image:
+      registry: docker.io
+      repository: library/busybox
+      pullPolicy: Always
+      version: latest
+  tls:
+    enabled: false
+    customCA: ""
+    image:
+      registry: docker.io
+      repository: library/rockylinux
+      pullPolicy: Always
+      version: 9

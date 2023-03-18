@@ -1,4 +1,7 @@
 spiffe-oidc-discovery-provider:
+  tests:
+    tls:
+      enabled: true
   ingress:
     enabled: true
     annotations:

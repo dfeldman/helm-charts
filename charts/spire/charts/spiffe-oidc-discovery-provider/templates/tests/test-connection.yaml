@@ -12,31 +12,48 @@ spec:
     {{- toYaml .Values.podSecurityContext | nindent 4 }}
   containers:
     - name: wget-service-name
-      image: busybox
+      image: {{ include "spiffe-oidc-discovery-provider.image" .Values.tests.busybox }}
       command: ['wget']
       args: ['-O', '/dev/null', '{{ include "spiffe-oidc-discovery-provider.fullname" . }}:{{ .Values.service.port }}/.well-known/openid-configuration']
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
     - name: wget-service-name-namespace
-      image: busybox
+      image: {{ include "spiffe-oidc-discovery-provider.image" .Values.tests.busybox }}
       command: ['wget']
       args: ['-O', '/dev/null', '{{ include "spiffe-oidc-discovery-provider.fullname" . }}.{{ include "spiffe-oidc-discovery-provider.namespace" . }}:{{ .Values.service.port }}/.well-known/openid-configuration']
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
     - name: wget-service-name-namespace-svc-cluster-local
-      image: busybox
+      image: {{ include "spiffe-oidc-discovery-provider.image" .Values.tests.busybox }}
       command: ['wget']
       args: ['-O', '/dev/null', '{{ include "spiffe-oidc-discovery-provider.fullname" . }}.{{ include "spiffe-oidc-discovery-provider.namespace" . }}.svc.cluster.local:{{ .Values.service.port }}/.well-known/openid-configuration']
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
     {{- if .Values.ingress.enabled }}
-    - name: wget-ingress
-      image: busybox
+    - name: ingress
+      {{- if .Values.tests.tls.enabled }}
+      image: {{ include "spiffe-oidc-discovery-provider.image" .Values.tests.tls }}
+      command: ['curl']
+      args: ['--cacert', '/ca/ca.crt', 'https://{{ index .Values.config.domains 0 }}/.well-known/openid-configuration']
+      {{- if .Values.tests.tls.customCA }}
+      volumeMounts:
+      - name: custom-ca
+        mountPoint: /ca
+      {{- end }}
+      {{- else }}
+      image: {{ include "spiffe-oidc-discovery-provider.image" .Values.tests.busybox }}
       command: ['wget']
       args: ['-O', '/dev/null', '{{ index .Values.config.domains 0 }}/.well-known/openid-configuration']
+      {{- end }}
       hostAliases:
         {{- toYaml .Values.tests.hostAliases | nindent 8 }}
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
+    {{- end }}
+    {{- if .Values.tests.tls.customCA }}
+    volumes:
+    - name: custom-ca
+      secret:
+        secretName: {{ .Values.tests.tls.customCA }}
     {{- end }}
   restartPolicy: Never

@@ -25,8 +25,5 @@ spiffe-oidc-discovery-provider:
       - "oidc-discovery.example.org"
 EOF
 
-helm upgrade --install --namespace spire-server spire charts/spire -f examples/production/values.yaml -f examples/production/values-export-ingress-nginx.yaml -f /tmp/dummydns --wait
-
-kubectl get secret -n spire-server tls-cert -o go-template='{{ index .data "ca.crt" | base64decode }}' > /tmp/ca
-
-curl --cacert /tmp/ca --resolve oidc-discovery.example.org:443:$ip https://oidc-discovery.example.org/.well-known/openid-configuration
+helm upgrade --install --namespace spire-server spire charts/spire -f examples/production/values.yaml -f examples/production/values-export-ingress-nginx.yaml \
+    -f /tmp/dummydns --set spiffe-oidc-discovery-provider.tests.tls.customCA=tls-cert --wait

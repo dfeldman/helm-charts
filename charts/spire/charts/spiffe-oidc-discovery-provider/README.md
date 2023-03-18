@@ -68,7 +68,17 @@ A Helm chart to install the SPIFFE OIDC discovery provider.
 | telemetry.prometheus.nginxExporter.image.version | string | `"0.11.0"` |  |
 | telemetry.prometheus.nginxExporter.resources | object | `{}` |  |
 | telemetry.prometheus.port | int | `9988` |  |
+| tests.busybox.image.pullPolicy | string | `"Always"` |  |
+| tests.busybox.image.registry | string | `"docker.io"` |  |
+| tests.busybox.image.repository | string | `"library/busybox"` |  |
+| tests.busybox.image.version | string | `"latest"` |  |
 | tests.hostAliases | list | `[]` |  |
+| tests.tls.customCA | string | `""` |  |
+| tests.tls.enabled | bool | `false` |  |
+| tests.tls.image.pullPolicy | string | `"Always"` |  |
+| tests.tls.image.registry | string | `"docker.io"` |  |
+| tests.tls.image.repository | string | `"library/rockylinux"` |  |
+| tests.tls.image.version | int | `9` |  |
 | tolerations | list | `[]` |  |
 | trustDomain | string | `"example.org"` |  |
 
