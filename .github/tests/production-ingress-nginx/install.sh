@@ -14,7 +14,7 @@ helm install ingress-nginx ingress-nginx --version 4.5.2 --repo https://kubernet
 helm upgrade --install --namespace spire-server spire charts/spire -f examples/production/values.yaml -f examples/production/values-export-ingress-nginx.yaml --wait
 
 ip=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o go-template='{{ .spec.clusterIP }}')
-echo ip oidc-discovery.example.org
+echo $ip oidc-discovery.example.org
 
 kubectl get secret -n spire-server tls-cert -o go-template='{{ index .data "ca.crt" | base64decode }}' > /tmp/ca
 
