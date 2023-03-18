@@ -45,8 +45,10 @@ spec:
       command: ['wget']
       args: ['-O', '/dev/null', '{{ index .Values.config.domains 0 }}/.well-known/openid-configuration']
       {{- end }}
+      {{- if ne (len .Values.tests.hostAliases) 0 }}
       hostAliases:
         {{- toYaml .Values.tests.hostAliases | nindent 8 }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.securityContext | nindent 8 }}
     {{- end }}
